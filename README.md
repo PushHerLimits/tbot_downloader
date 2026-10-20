@@ -7,12 +7,13 @@ A Telegram bot that downloads videos from links shared in a chat, built on **Nes
 
 ## Architecture
 
-- `BotModule` / `BotService` — wraps `node-telegram-bot-api`; handlers are registered in the
-  `OnModuleInit` lifecycle hook once dependency injection is ready.
+- `BotModule` / `BotService` — wraps `node-telegram-bot-api` v2 (`Bot`, long polling). The client is
+  created in `OnModuleInit` and stopped in `OnModuleDestroy`; without a token the app still boots
+  with the bot disabled. Only message and chat ids are logged, never message bodies.
 - `AppModule` composes modules from two import lists (`src/app/imports/internals.import.ts` and
   `externals.import.ts`) so infrastructure and feature modules stay separate.
 - `docker-compose.yml` runs the app next to MongoDB 6 and Redis 7 (planned: persistence and a job
-  queue for downloads).
+  queue for downloads; no database client is wired in yet).
 
 ## Getting started
 
@@ -38,6 +39,7 @@ Never commit `.env`; it is git-ignored.
 | `npm run build` | Compile to `dist/` |
 | `npm run lint` | ESLint + Prettier |
 | `npm test` | Jest unit tests |
+| `npm run test:e2e` | Boots the whole app without a token |
 
 ## Roadmap
 
@@ -45,3 +47,4 @@ Never commit `.env`; it is git-ignored.
 - [ ] Queue long downloads in Redis
 - [ ] Persist chats and requests
 - [ ] Tests for the message handler
+- [ ] Choose the persistence layer (MongoDB client) once downloads exist
